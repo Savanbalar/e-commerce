@@ -4,20 +4,20 @@ const { addCart } = require("../models");
 
 
 const createaddCart = async (req, res) => {
-    try {
+    
         const body = req.body;
 
+        console.log( body.product," body.product");
+        
         const cartExist = await addCart.findOne({ product: body.product });
+        console.log(cartExist,"cartExist");
+        
         if (cartExist) {
             return res.status(httpStatus.BAD_REQUEST).send({ message: "cart created successfully." })
         }
         body.user = req.authUser._id;
-
         const addcart = await addCart.create(req.body);
         return res.status(httpStatus.CREATED).send({ addcart })
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message })
-    }
 }
 
 const getaddCart = async (req, res) => {

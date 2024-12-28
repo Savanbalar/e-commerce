@@ -5,11 +5,11 @@ const fs = require('fs');
 
 
 
-const saveFile = (files,uploadPath='') => {
+const saveFile = (files, uploadPath = '') => {
     let fileUploadPath = config.fileUploadPath + '/images/' + uploadPath;
     const fileName = moment().unix() + Math.floor(1000 + Math.random() * 9000) + '.' + files.name.split('.').pop();
     // console.log(fileName,"fileName");
-    
+
     return new Promise(async (resolve, reject) => {
         fileUploadPath = fileUploadPath + '/' + fileName;
         files.mv(fileUploadPath, async (err) => {
@@ -40,13 +40,14 @@ const removeFile = (file_name) => {
     })
 }
 
-const arrayImage = (image) =>{
-   if (Array.isArray(image)) {
-       return image[0]
-   } else {
-     return image
-   }
+const arrayImage = (image) => {
+    if (Array.isArray(image)) {
+        return image[0]
+    } else {
+        return image
+    }
 }
+
 
 
 
@@ -57,4 +58,5 @@ module.exports = {
     saveFile,
     removeFile,
     arrayImage,
+    
 }

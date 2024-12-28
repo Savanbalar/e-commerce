@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const { Product } = require('../models');
-const  ObjectId  = require('mongodb');
+const ObjectId = require('mongodb');
 const { saveFile, removeFile, arrayImage } = require('../utils/helper');
 
 
@@ -14,13 +14,13 @@ const productCreate = async (req, res) => {
       return res.status(httpStatus.BAD_REQUEST).send({ message: "Product name already exits with name" });
     }
     body.user = req.authUser._id;
-      
-      const { upload_path } = await saveFile(arrayImage(req.files.image), 'product');
 
-      body.image = upload_path;
+    const { upload_path } = await saveFile(arrayImage(req.files.image), 'product');
+
+    body.image = upload_path;
 
     const product = await Product.create(req.body);
-    
+
 
     return res.status(httpStatus.CREATED).send({ product });
 
@@ -34,7 +34,7 @@ const productCreate = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
   try {
-   
+
     const result = await Product.aggregate([
       {
         $lookup: {
@@ -69,7 +69,7 @@ const getAllProduct = async (req, res) => {
                   $eq: ['$product', '$$pid']
                 }
               }]
-            }, 
+            },
           },
           {
             $sort: {
@@ -81,7 +81,7 @@ const getAllProduct = async (req, res) => {
       },
       {
         $addFields: {
-          price: { $arrayElemAt: ["$result.price",0] }
+          price: { $arrayElemAt: ["$result.price", 0] }
         }
       }
 
@@ -152,7 +152,7 @@ const deleteProductById = async (req, res) => {
 
 const searchProduct = async (req, res) => {
   try {
-    let {page, limit} = req.query;
+    let { page, limit } = req.query;
     page = parseInt(page);
     limit = parseInt(limit);
     const aggregate = [
@@ -164,12 +164,12 @@ const searchProduct = async (req, res) => {
               { "description": { $regex: req.query.search } }
             ],
           }),
-          
+
           ...(req.query?.filterBy && { category_id: new ObjectId(req.query.filterBy) })
 
         }
       },
-      
+
       {
         $lookup: {
           from: "users",
@@ -190,12 +190,12 @@ const searchProduct = async (req, res) => {
           foreignField: "_id",
           as: "category_id"
         }
-      }, {
+      }, 
+      {
         $unwind: {
           path: "$category_id"
         }
       },
-
       {
         $lookup: {
           from: "productdetails",
@@ -209,11 +209,11 @@ const searchProduct = async (req, res) => {
               }
             },
           },
-            {
-              '$sort': {
-                'price': -1
-              }
+          {
+            '$sort': {
+              'price': -1
             }
+          }
           ],
           as: "product_detail",
         }
@@ -232,10 +232,10 @@ const searchProduct = async (req, res) => {
 
       },
       {
-        $skip :(page * limit) - limit
+        $skip: (page * limit) - limit
       },
       {
-        $limit : limit
+        $limit: limit
       }
 
       // {
@@ -269,7 +269,7 @@ const searchProduct = async (req, res) => {
     if (req.query?.priceSort) {
       aggregate.push({
         $sort: {
-           price: req.query.priceSort == "low" ? 1 : -1
+          price: req.query.priceSort == "low" ? 1 : -1
         }
       })
     }
